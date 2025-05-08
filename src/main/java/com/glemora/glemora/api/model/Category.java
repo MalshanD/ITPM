@@ -17,7 +17,7 @@ public class Category {
 
     private String displayName;
 
-    private String Image;
+    private String image;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
