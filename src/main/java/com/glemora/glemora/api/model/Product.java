@@ -38,5 +38,13 @@ public class Product {
     @Column(columnDefinition = "boolean default false")
     private Boolean featured = false;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
 
 }
