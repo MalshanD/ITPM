@@ -1,5 +1,6 @@
 package com.glemora.glemora.api.controller;
 
+import com.glemora.glemora.api.service.Impl.VirtualTryOnServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,4 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class VirtualTryOnController {
+
+    private final VirtualTryOnServiceImpl virtualTryOnService;
 }
