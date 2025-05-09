@@ -254,4 +254,13 @@ public class VirtualTryOnServiceImpl {
 
         return response;
     }
+
+    private String getFileExtension(String filename) {
+        if (filename == null) return "jpg";
+        int lastDotIndex = filename.lastIndexOf('.');
+        if (lastDotIndex > 0) {
+            return filename.substring(lastDotIndex + 1).toLowerCase();
+        }
+        return "jpg";
+    }
 }
