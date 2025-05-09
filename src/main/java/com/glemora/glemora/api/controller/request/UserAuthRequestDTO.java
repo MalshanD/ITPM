@@ -13,6 +13,6 @@ public class UserAuthRequestDTO {
     private String name;
     private String username;
     private String password;
-    private String email;
+    private String ;
     private List<Long> role;
 }
