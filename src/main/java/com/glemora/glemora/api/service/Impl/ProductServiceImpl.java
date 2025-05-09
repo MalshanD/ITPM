@@ -98,5 +98,8 @@ public class ProductServiceImpl {
 
         return productRepository.save(existingProduct);
     }
-
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);
+    }
+}
 
