@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -146,5 +147,25 @@ public class VirtualTryOnServiceImpl {
             log.error("Error processing remote image: {}", e.getMessage(), e);
             throw e;
         }
+    }
+
+    public Map<String, String> uploadAndResizeImages(MultipartFile personImage, MultipartFile garmentImage) throws IOException {
+
+        byte[] resizedPersonImage = resizeImageIfNeeded(personImage.getBytes(), getFileExtension(personImage.getOriginalFilename()));
+        byte[] resizedGarmentImage = resizeImageIfNeeded(garmentImage.getBytes(), getFileExtension(garmentImage.getOriginalFilename()));
+
+        Map<?, ?> personUploadResult = cloudinary.uploader().upload(resizedPersonImage, ObjectUtils.asMap("folder", "glemora/tryon/person"));
+
+        Map<?, ?> garmentUploadResult = cloudinary.uploader().upload(resizedGarmentImage, ObjectUtils.asMap("folder", "glemora/tryon/garment"));
+
+        String personImageUrl = (String) personUploadResult.get("secure_url");
+        String garmentImageUrl = (String) garmentUploadResult.get("secure_url");
+
+        log.info("Uploaded resized images to Cloudinary: person: {}, garment: {}", personImageUrl, garmentImageUrl);
+
+        Map<String, String> result = new HashMap<>();
+        result.put("personImageUrl", personImageUrl);
+        result.put("garmentImageUrl", garmentImageUrl);
+        return result;
     }
 }
