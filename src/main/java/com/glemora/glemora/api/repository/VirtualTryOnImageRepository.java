@@ -11,5 +11,6 @@ public interface VirtualTryOnImageRepository extends JpaRepository<VirtualTryOnI
 
     List<VirtualTryOnImage> findByUser(User user);
     List<VirtualTryOnImage> findByProduct(Product product);
+    List<VirtualTryOnImage> findByUserAndProduct(User user, Product product);
 
 }
