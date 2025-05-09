@@ -20,4 +20,5 @@ public class VirtualTryOnServiceImpl {
     private final UserRepository userRepository;
     private final VirtualTryOnImageRepository virtualTryOnImageRepository;
 
+    private static final int MAX_IMAGE_DIMENSION = 5900;
 }
