@@ -12,6 +12,7 @@ import org.springframework.web.filter.CorsFilter;
 @EnableMethodSecurity(jsr250Enabled = true) // Enable @RolesAllowed
 @RequiredArgsConstructor
 public class SecurityConfiguration {
+
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final CorsFilter corsFilter;
