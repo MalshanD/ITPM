@@ -1,6 +1,7 @@
 package com.glemora.glemora.api.service.Impl;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.glemora.glemora.api.config.PixelcutConfig;
 import com.glemora.glemora.api.controller.response.TryOnResponse;
 import com.glemora.glemora.api.repository.VirtualTryOnImageRepository;
@@ -13,6 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -79,6 +84,66 @@ public class VirtualTryOnServiceImpl {
             }
         } catch (Exception e) {
             log.error("Error calling try-on API: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    private String checkAndResizeRemoteImageIfNeeded(String imageUrl) throws IOException {
+
+        log.info("Checking dimensions of remote image: {}", imageUrl);
+
+        try {
+
+            java.net.URL url = new java.net.URL(imageUrl);
+            BufferedImage originalImage = ImageIO.read(url);
+
+            if (originalImage == null) {
+                log.warn("Could not read image from URL: {}", imageUrl);
+                return imageUrl;
+            }
+
+            if (originalImage.getWidth() <= MAX_IMAGE_DIMENSION && originalImage.getHeight() <= MAX_IMAGE_DIMENSION) {
+                log.info("Image dimensions are within limits: {}x{}", originalImage.getWidth(), originalImage.getHeight());
+                return imageUrl;
+            }
+
+            log.info("Image needs resizing, current dimensions: {}x{}", originalImage.getWidth(), originalImage.getHeight());
+
+            int newWidth = originalImage.getWidth();
+            int newHeight = originalImage.getHeight();
+
+            if (newWidth > MAX_IMAGE_DIMENSION) {
+                float aspectRatio = (float) originalImage.getHeight() / originalImage.getWidth();
+                newWidth = MAX_IMAGE_DIMENSION;
+                newHeight = Math.round(MAX_IMAGE_DIMENSION * aspectRatio);
+            }
+
+            if (newHeight > MAX_IMAGE_DIMENSION) {
+                float aspectRatio = (float) originalImage.getWidth() / originalImage.getHeight();
+                newHeight = MAX_IMAGE_DIMENSION;
+                newWidth = Math.round(MAX_IMAGE_DIMENSION * aspectRatio);
+            }
+
+            BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = resizedImage.createGraphics();
+            g.drawImage(originalImage, 0, 0, newWidth, newHeight, null);
+            g.dispose();
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ImageIO.write(resizedImage, "jpg", outputStream);
+
+            Map<?, ?> uploadResult = cloudinary.uploader().upload(
+                    outputStream.toByteArray(),
+                    ObjectUtils.asMap("folder", "glemora/tryon/resized")
+            );
+
+            String resizedImageUrl = (String) uploadResult.get("secure_url");
+            log.info("Uploaded resized image to Cloudinary: {} ({}x{})", resizedImageUrl, newWidth, newHeight);
+
+            return resizedImageUrl;
+
+        } catch (IOException e) {
+            log.error("Error processing remote image: {}", e.getMessage(), e);
             throw e;
         }
     }
