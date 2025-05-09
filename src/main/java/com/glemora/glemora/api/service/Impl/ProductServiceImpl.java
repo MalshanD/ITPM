@@ -83,7 +83,7 @@ public class ProductServiceImpl {
                     .get("url")
                     .toString();
 
-            existingProduct.setImage(productPic);
+
         }
 
         if (pngTryOnImage != null && !pngTryOnImage.isEmpty()){
