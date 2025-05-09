@@ -18,11 +18,14 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.google.common.io.Files.getFileExtension;
 
 @Service
 @Slf4j
@@ -167,5 +170,40 @@ public class VirtualTryOnServiceImpl {
         result.put("personImageUrl", personImageUrl);
         result.put("garmentImageUrl", garmentImageUrl);
         return result;
+    }
+
+    private byte[] resizeImageIfNeeded(byte[] imageData, String formatName) throws IOException {
+        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(imageData));
+
+        if (originalImage.getWidth() <= MAX_IMAGE_DIMENSION && originalImage.getHeight() <= MAX_IMAGE_DIMENSION) {
+            return imageData;
+        }
+
+        int newWidth = originalImage.getWidth();
+        int newHeight = originalImage.getHeight();
+
+        if (newWidth > MAX_IMAGE_DIMENSION) {
+            float aspectRatio = (float) originalImage.getHeight() / originalImage.getWidth();
+            newWidth = MAX_IMAGE_DIMENSION;
+            newHeight = Math.round(MAX_IMAGE_DIMENSION * aspectRatio);
+        }
+
+        if (newHeight > MAX_IMAGE_DIMENSION) {
+            float aspectRatio = (float) originalImage.getWidth() / originalImage.getHeight();
+            newHeight = MAX_IMAGE_DIMENSION;
+            newWidth = Math.round(MAX_IMAGE_DIMENSION * aspectRatio);
+        }
+
+        BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = resizedImage.createGraphics();
+        g.drawImage(originalImage, 0, 0, newWidth, newHeight, null);
+        g.dispose();
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(resizedImage, formatName, outputStream);
+
+        log.info("Resized image from {}x{} to {}x{}", originalImage.getWidth(), originalImage.getHeight(), newWidth, newHeight);
+
+        return outputStream.toByteArray();
     }
 }
