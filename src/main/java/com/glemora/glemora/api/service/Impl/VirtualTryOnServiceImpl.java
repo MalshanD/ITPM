@@ -8,6 +8,8 @@ import com.glemora.glemora.api.controller.response.TryOnUserProductResponse;
 import com.glemora.glemora.api.model.Product;
 import com.glemora.glemora.api.model.User;
 import com.glemora.glemora.api.model.VirtualTryOnImage;
+import com.glemora.glemora.api.repository.ProductRepository;
+import com.glemora.glemora.api.repository.UserRepository;
 import com.glemora.glemora.api.repository.VirtualTryOnImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
