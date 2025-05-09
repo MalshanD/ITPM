@@ -100,7 +100,3 @@ public class ProductServiceImpl {
     }
 
 
-    public void deleteProduct(Long id) {
-        productRepository.deleteById(id);
-    }
-}
