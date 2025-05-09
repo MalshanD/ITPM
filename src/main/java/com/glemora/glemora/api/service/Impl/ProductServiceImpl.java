@@ -83,6 +83,8 @@ public class ProductServiceImpl {
                     .get("url")
                     .toString();
 
+            existingProduct.setImage(productPic);
+
 
         }
 
