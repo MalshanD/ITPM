@@ -10,5 +10,6 @@ import java.util.List;
 public interface VirtualTryOnImageRepository extends JpaRepository<VirtualTryOnImage, Long> {
 
     List<VirtualTryOnImage> findByUser(User user);
+    List<VirtualTryOnImage> findByProduct(Product product);
 
 }
