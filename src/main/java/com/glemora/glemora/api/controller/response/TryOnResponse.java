@@ -4,5 +4,6 @@ import lombok.Data;
 
 @Data
 public class TryOnResponse {
+
     private String resultUrl;
 }
