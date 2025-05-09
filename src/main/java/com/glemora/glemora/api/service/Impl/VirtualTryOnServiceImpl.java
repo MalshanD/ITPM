@@ -4,6 +4,10 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.glemora.glemora.api.config.PixelcutConfig;
 import com.glemora.glemora.api.controller.response.TryOnResponse;
+import com.glemora.glemora.api.controller.response.TryOnUserProductResponse;
+import com.glemora.glemora.api.model.Product;
+import com.glemora.glemora.api.model.User;
+import com.glemora.glemora.api.model.VirtualTryOnImage;
 import com.glemora.glemora.api.repository.VirtualTryOnImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -205,5 +209,49 @@ public class VirtualTryOnServiceImpl {
         log.info("Resized image from {}x{} to {}x{}", originalImage.getWidth(), originalImage.getHeight(), newWidth, newHeight);
 
         return outputStream.toByteArray();
+    }
+
+    public TryOnUserProductResponse tryOnProductWithUserImage(MultipartFile userImage, Long productId, String username) throws IOException {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new RuntimeException("User not found with username: " + username);
+        }
+
+        log.info("Processing try-on for user ID: {} and product ID: {}", user.getId(), productId);
+
+        byte[] resizedUserImage = resizeImageIfNeeded(userImage.getBytes(), getFileExtension(userImage.getOriginalFilename()));
+
+        Map<?, ?> userImageUploadResult = cloudinary.uploader().upload(resizedUserImage,
+                ObjectUtils.asMap("folder", "glemora/tryon/users/" + user.getId()));
+
+        String userImageUrl = (String) userImageUploadResult.get("secure_url");
+        log.info("Uploaded user image to Cloudinary: {}", userImageUrl);
+
+        String productImageUrl = product.getPngTryOnImage();
+        if (productImageUrl == null || productImageUrl.isEmpty()) {
+            throw new RuntimeException("Product does not have a try-on image");
+        }
+
+        TryOnResponse tryOnResponse = tryOnGarment(userImageUrl, productImageUrl);
+
+        VirtualTryOnImage virtualTryOnImage = new VirtualTryOnImage();
+        virtualTryOnImage.setProduct(product);
+        virtualTryOnImage.setUser(user);
+        virtualTryOnImage.setUploadImagePath(userImageUrl);
+        virtualTryOnImage.setGeneratedImagePath(tryOnResponse.getResultUrl());
+
+        virtualTryOnImageRepository.save(virtualTryOnImage);
+
+        TryOnUserProductResponse response = new TryOnUserProductResponse();
+        response.setGeneratedImageUrl(tryOnResponse.getResultUrl());
+        response.setProductId(product.getId());
+        response.setUserId(user.getId());
+        response.setUploadedImagePath(userImageUrl);
+
+        return response;
     }
 }
