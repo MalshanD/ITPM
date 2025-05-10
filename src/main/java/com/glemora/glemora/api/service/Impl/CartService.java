@@ -27,6 +27,7 @@ public class CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
+
     @Transactional
     public CartDTO getActiveCart(String username) throws UserNotFoundException {
         User user = userRepository.findByUsername(username);
