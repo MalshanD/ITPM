@@ -1,4 +1,4 @@
-package com.glemora.glemora.api.controller.response;
+package com.glemora.glemora.api.controller;
 
 import com.glemora.glemora.api.controller.request.OrderDTO;
 import com.glemora.glemora.api.controller.request.OrderRequest;
