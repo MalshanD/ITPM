@@ -21,4 +21,5 @@ public class OrderDTO {
     private String notes;
     private OrderStatus status;
     private List<OrderItemDTO> items;
+
 }

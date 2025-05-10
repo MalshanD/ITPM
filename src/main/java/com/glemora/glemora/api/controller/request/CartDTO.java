@@ -14,4 +14,5 @@ public class CartDTO {
     private LocalDateTime updatedAt;
     private List<CartItemDTO> items;
     private double totalPrice;
+
 }

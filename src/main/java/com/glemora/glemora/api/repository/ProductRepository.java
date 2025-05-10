@@ -1,4 +1,5 @@
-git package com.glemora.glemora.api.repository;
+package com.glemora.glemora.api.repository;
+
 
 import com.glemora.glemora.api.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
