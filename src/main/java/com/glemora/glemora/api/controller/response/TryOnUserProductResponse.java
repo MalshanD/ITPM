@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class TryOnUserProductResponse {
-
     private String generatedImageUrl;
     private Long productId;
     private Long userId;

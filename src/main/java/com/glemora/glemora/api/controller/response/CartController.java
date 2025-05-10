@@ -3,7 +3,6 @@ package com.glemora.glemora.api.controller.response;
 import com.glemora.glemora.api.controller.request.CartDTO;
 import com.glemora.glemora.api.exception.ActiveCartNotFoundException;
 import com.glemora.glemora.api.exception.CartItemNotFoundException;
-import com.glemora.glemora.api.exception.ProductNotFoundException;
 import com.glemora.glemora.api.exception.UserNotFoundException;
 import com.glemora.glemora.api.service.Impl.CartService;
 import jakarta.annotation.security.RolesAllowed;
