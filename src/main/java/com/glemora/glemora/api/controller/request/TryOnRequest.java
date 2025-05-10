@@ -6,4 +6,5 @@ import lombok.Data;
 public class TryOnRequest {
     private String personImageUrl;
     private String garmentImageUrl;
+
 }
