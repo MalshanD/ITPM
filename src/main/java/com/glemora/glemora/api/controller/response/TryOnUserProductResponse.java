@@ -9,4 +9,5 @@ public class TryOnUserProductResponse {
     private Long productId;
     private Long userId;
     private String uploadedImagePath;
+
 }
